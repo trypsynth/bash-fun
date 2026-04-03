@@ -3,22 +3,44 @@
 set -euo pipefail
 
 format_time() {
-	local total_seconds="$1"
-	local minutes=$(( total_seconds / 60 ))
+	local total_seconds=$1
+	local days=$(( total_seconds / 86400 ))
+	local hours=$(( (total_seconds % 86400) / 3600 ))
+	local minutes=$(( (total_seconds  % 3600) / 60 ))
 	local seconds=$(( total_seconds % 60 ))
-	local result=""
-	if (( minutes > 0 )); then
-		result="${minutes} minute"
-		(( minutes != 1 )) && result="${result}s"
+	local units=()
+	add_unit() {
+		local val=$1
+		local label=$2
+		if (( val > 0 )); then
+			[[ $val -gt 1 ]] && label="${label}s"
+			units+=("$val $label")
+		fi
+	}
+	add_unit "$days" "day"
+	add_unit "$hours" "hour"
+	add_unit "$minutes" "minute"
+	add_unit "$seconds" "second"
+	if [[ ${#units[@]} -eq 0 ]]; then
+		echo "0 seconds"
+		return
 	fi
-	if (( minutes > 0 && seconds > 0 )); then
-		result="${result} "
-	fi
-	if (( seconds > 0 || total_seconds == 0 )); then
-		result="${result}${seconds} second"
-		(( seconds != 1 )) && result="${result}s"
-	fi
-	echo "$result"
+	local count=${#units[@]}
+	case $count in
+		1)
+			echo "${units[0]}"
+			;;
+		2)
+			echo "${units[0]} and ${units[1]}"
+			;;
+		*)
+			local result=""
+			for (( i = 0; i < count - 1; i++ )); do
+				result+="${units[i]}"
+			done
+			echo "$result"
+			;;
+	esac
 }
 
 echo "Stopwatch started. Press space to see the elapsed time, or enter to stop."

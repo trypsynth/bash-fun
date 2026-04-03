@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+projname="$1"
+if [[ -z "$projname" ]]; then
+	echo "usage: $(basename "$0") <project-name>"
+	exit 1
+fi
+if [[ -e "$projname" ]]; then
+	read -rp "$projname already exists. Overwrite? (y/n): " choice
+	[[ "$choice" =~ ^[yY]([eE][sS])?$ ]] || exit 0
+fi
+cat <<EOF > "$projname"
+#!/usr/bin/env bash
+
+set -euo pipefail
+EOF
+chmod +x "$projname"
+echo "Initialized $projname"

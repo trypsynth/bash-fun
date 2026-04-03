@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+format_time() {
+	local total_seconds="$1"
+	local minutes=$(( total_seconds / 60 ))
+	local seconds=$(( total_seconds % 60 ))
+	local result=""
+	if (( minutes > 0 )); then
+		result="${minutes} minute"
+		(( minutes != 1 )) && result="${result}s"
+	fi
+	if (( minutes > 0 && seconds > 0 )); then
+		result="${result} "
+	fi
+	if (( seconds > 0 || total_seconds == 0 )); then
+		result="${result}${seconds} second"
+		(( seconds != 1 )) && result="${result}s"
+	fi
+	echo "$result"
+}
+
+echo "Stopwatch started. Press space to see the elapsed time, or enter to stop."
+SECONDS=0
+while true; do
+	if IFS= read -rsn 1 -t 0.1 char; then
+		if [[ -z "$char" ]]; then
+			echo -e "\nStopped, final time $(format_time "$SECONDS")."
+			exit 0
+		fi
+		if [[ "$char" == " " ]]; then
+			echo "$(format_time "$SECONDS") elapsed."
+		fi
+	fi
+done

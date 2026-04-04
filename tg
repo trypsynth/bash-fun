@@ -3,12 +3,12 @@
 set -Eeuo pipefail
 
 randint() {
-	local min="$1"
-	local max="$2"
-	if [[ -z "$min" || -z "$max" ]]; then
+	[[ "$#" == 2 ]] || {
 		echo "Usage: randint <min> <max>" >&2
 		return 1
-	fi
+	}
+	local min="$1"
+	local max="$2"
 	local re='^-?[0-9]+$'
 	if ! [[ "$min" =~ $re ]] || ! [[ "$max" =~ $re ]]; then
 		echo "Error: Arguments must be integers." >&2

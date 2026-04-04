@@ -21,4 +21,30 @@ randint() {
 	echo $(( RANDOM % (max - min + 1) + min ))
 }
 
-randint 1 10
+show_intro() {
+	clear
+	cat <<-EOF
+	Welcome to TermaGames, a small collection of Bash minigames.
+	For instructions, press h. To start playing, press enter. To exit, press escape.
+	EOF
+}
+
+show_intro
+while true; do
+	IFS= read -rsn 1 key
+	case "$key" in
+		"")
+			randint 1 10
+			;;
+		$'\e')
+			echo "Goodbye."
+			exit 0
+			;;
+		[hH])
+			echo "Not yet."
+			show_intro
+			;;
+		*)
+			;;
+	esac
+done

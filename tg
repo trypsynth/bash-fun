@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+randint() {
+	local min="$1"
+	local max="$2"
+	if [[ -z "$min" || -z "$max" ]]; then
+		echo "Usage: randint <min> <max>" >&2
+		return 1
+	fi
+	local re='^-?[0-9]+$'
+	if ! [[ "$min" =~ $re ]] || ! [[ "$max" =~ $re ]]; then
+		echo "Error: Arguments must be integers." >&2
+		return 1
+	fi
+	if (( min > max )); then
+		echo "Error: Min cannot be greater than Max." >&2
+		return 1
+	fi
+	echo $(( RANDOM % (max - min + 1) + min ))
+}
+
+randint 1 10

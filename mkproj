@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -Eeuo pipefail
 
 projname="$1"
 if [[ -z "$projname" ]]; then
@@ -14,7 +14,7 @@ fi
 cat <<EOF > "$projname"
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -Eeuo pipefail
 EOF
 chmod +x "$projname"
-echo "Initialized $projname"
+echo "Successfully initialized $projname."

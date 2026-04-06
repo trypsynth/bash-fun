@@ -21,6 +21,17 @@ randint() {
 	echo $(( RANDOM % (max - min + 1) + min ))
 }
 
+show_help() {
+	clear
+	cat <<-EOF
+	The goal: Survive 10 rounds of random challenges, accumulating points along the way.
+	Accumulate the highest score possible to win.
+	Press any key to return to the menu...
+	EOF
+	read -rsn 1
+	show_intro
+}
+
 show_intro() {
 	clear
 	cat <<-EOF
@@ -41,8 +52,7 @@ while true; do
 			exit 0
 			;;
 		[hH])
-			echo "Not yet."
-			show_intro
+			show_help
 			;;
 		*)
 			;;

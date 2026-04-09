@@ -21,22 +21,11 @@ randint() {
 	echo $(( RANDOM % (max - min + 1) + min ))
 }
 
-show_help() {
-	clear
-	cat <<-EOF
-	The goal: Survive 10 rounds of random challenges, accumulating points along the way.
-	Accumulate the highest score possible to win.
-	Press any key to return to the menu...
-	EOF
-	read -rsn 1
-	show_intro
-}
-
 show_intro() {
 	clear
 	cat <<-EOF
 	Welcome to TermaGames, a small collection of Bash minigames.
-	For instructions, press h. To start playing, press enter. To exit, press escape.
+	To start playing, press enter. To exit, press escape.
 	EOF
 }
 
@@ -50,9 +39,6 @@ while true; do
 		$'\e')
 			echo "Goodbye."
 			exit 0
-			;;
-		[hH])
-			show_help
 			;;
 		*)
 			;;

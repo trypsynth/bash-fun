@@ -86,11 +86,13 @@ play_session() {
 	done
 	echo "Game over. Final score: $score."
 	echo "Would you like to play again? y/n"
-	read -rsn 1 choice
-	case "$choice" in
-		[yY]) return 0 ;;
-		*) echo "Thanks for playing!"; exit 0 ;;
-	esac
+	while true; do
+		read -rsn 1 choice
+		case "$choice" in
+			[yY]) return 0 ;;
+			[nN]) echo "Thanks for playing!"; exit 0 ;;
+		esac
+	done
 }
 
 show_intro() {

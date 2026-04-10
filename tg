@@ -2,6 +2,9 @@
 
 set -Eeuo pipefail
 
+score=0
+rounds=10
+
 randint() {
 	[[ "$#" == 2 ]] || {
 		echo "Usage: randint <min> <max>" >&2
@@ -21,6 +24,31 @@ randint() {
 	echo $(( RANDOM % (max - min + 1) + min ))
 }
 
+game_test() {
+	(( score += $(randint 1 10) ))
+}
+
+play_session() {
+	score=0
+	local game_pool=(
+		"game_test"
+	)
+	local session_list=$(printf "%s\n" "${game_pool[@]}" | shuf -n "$rounds")
+	local count=1
+	for current_game in "$session_list"; do
+		clear
+		echo "game $count of $rounds."
+		echo "Current score: $score."
+		$current_game
+		(( count++ ))
+	done
+	clear
+	echo "Game over. Total score: $score."
+	echo "Press any key to exit."
+	read -rsn 1
+	exit 0
+}
+
 show_intro() {
 	clear
 	cat <<-EOF
@@ -34,13 +62,11 @@ while true; do
 	IFS= read -rsn 1 key
 	case "$key" in
 		"")
-			randint 1 10
+			play_session
 			;;
 		$'\e')
 			echo "Goodbye."
 			exit 0
-			;;
-		*)
 			;;
 	esac
 done

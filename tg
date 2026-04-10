@@ -77,15 +77,20 @@ play_session() {
 		clear
 		echo "Round $count of $rounds."
 		$current_game
-		(( ++count )) || :
 		echo "Current score: $score."
-		echo "Press any key for the next round."
-		read -rsn 1
+		if (( count < rounds )); then
+			echo "Press any key for the next round."
+			read -rsn 1
+		fi
+		(( ++count )) || :
 	done
-	clear
-	echo "Game over. Total score: $score."
-	echo "Press any key to return to menu."
-	read -rsn 1
+	echo "Game over. Final score: $score."
+	echo "Would you like to play again? y/n"
+	read -rsn 1 choice
+	case "$choice" in
+		[yY]) return 0 ;;
+		*) echo "Thanks for playing!"; exit 0 ;;
+	esac
 }
 
 show_intro() {
@@ -98,8 +103,8 @@ show_intro() {
 
 wait_for_start() {
 	local key
+	show_intro
 	while true; do
-		show_intro
 		read -rsn 1 key
 		case "$key" in
 			"") return 0 ;;
@@ -108,8 +113,7 @@ wait_for_start() {
 	done
 }
 
+wait_for_start
 while true; do
-	if wait_for_start; then
-		play_session
-	fi
+	play_session
 done

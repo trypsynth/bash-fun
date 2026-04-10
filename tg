@@ -24,18 +24,53 @@ randint() {
 	echo $(( RANDOM % (max - min + 1) + min ))
 }
 
-game_test() {
-	(( score += $(randint 1 10) ))
+game_number_guess() {
+	local target
+	target=$(randint 1 10)
+	local guess=""
+	local attempts=0
+	local max_attempts=5
+	local points_earned=0
+	echo "Guess my number between 1 and 10."
+	while (( attempts < max_attempts )); do
+		read -r guess
+		if [[ ! "$guess" =~ ^[0-9]+$ ]]; then
+			echo "That's not a number. Try again."
+			continue
+		fi
+		(( attempts++ ))
+		if (( guess == target )); then
+			echo "You got it! The number was $target."
+			case "$attempts" in
+				1) points_earned=50 ;;
+				2) points_earned=$(randint 38 42) ;;
+				3) points_earned=$(randint 28 32) ;;
+				4) points_earned=$(randint 15 19) ;;
+				5) points_earned=$(randint 8 10) ;;
+			esac
+			break
+		elif (( guess < target )); then
+			echo "Too low!"
+		else
+			echo "Too high!"
+		fi
+	done
+	if (( guess != target )); then
+		echo "You're out of guesses! The number was $target."
+		points_earned=-10
+	fi
+	(( score += points_earned ))
 }
 
 play_session() {
 	score=0
 	local game_pool=(
-		"game_test"
+		"game_number_guess"
 	)
-	local session_list=$(printf "%s\n" "${game_pool[@]}" | shuf -n "$rounds")
+	local session_list
+	session_list=$(printf "%s\n" "${game_pool[@]}" | shuf -n "$rounds")
 	local count=1
-	for current_game in "$session_list"; do
+	for current_game in $session_list; do
 		clear
 		echo "game $count of $rounds."
 		echo "Current score: $score."

@@ -10,8 +10,7 @@ randint() {
 		echo "Usage: randint <min> <max>" >&2
 		return 1
 	}
-	local min="$1"
-	local max="$2"
+	local min="$1" max="$2"
 	local re='^-?[0-9]+$'
 	if ! [[ "$min" =~ $re ]] || ! [[ "$max" =~ $re ]]; then
 		echo "Error: Arguments must be integers." >&2
@@ -28,10 +27,9 @@ game_number_guess() {
 	local target
 	target=$(randint 1 10)
 	local guess=""
-	local attempts=0
-	local max_attempts=5
-	local points_earned=0
-	echo "Guess my number between 1 and 10."
+	local attempts=0 max_attempts=5 points_earned=0
+	game_name="Number Guess"
+	echo "$game_name. Guess my number between 1 and 10."
 	while (( attempts < max_attempts )); do
 		read -r guess
 		if [[ ! "$guess" =~ ^[0-9]+$ ]]; then
@@ -59,7 +57,12 @@ game_number_guess() {
 		echo "You're out of guesses! The number was $target."
 		points_earned=-10
 	fi
-	(( score += points_earned ))
+	if (( points_earned > 0 )); then
+		echo "You gained $points_earned points."
+	else
+		echo "You lost ${points_earned#-} points."
+	fi
+	(( score += points_earned )) || :
 }
 
 play_session() {
@@ -72,10 +75,11 @@ play_session() {
 	local count=1
 	for current_game in $session_list; do
 		clear
-		echo "ROUND $count / $rounds. SCORE: $score"
+		echo "Round $count of $rounds."
 		$current_game
-		(( count++ ))
-		echo -e "\nPress any key for the next round..."
+		(( ++count )) || :
+		echo "Current score: $score."
+		echo "Press any key for the next round."
 		read -rsn 1
 	done
 	clear

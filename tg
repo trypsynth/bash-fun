@@ -38,7 +38,7 @@ game_number_guess() {
 			echo "That's not a number. Try again."
 			continue
 		fi
-		(( attempts++ ))
+		(( ++attempts ))
 		if (( guess == target )); then
 			echo "You got it! The number was $target."
 			case "$attempts" in
@@ -55,7 +55,7 @@ game_number_guess() {
 			echo "Too high!"
 		fi
 	done
-	if (( guess != target )); then
+	if [[ "$guess" -ne "$target" ]]; then
 		echo "You're out of guesses! The number was $target."
 		points_earned=-10
 	fi
@@ -68,20 +68,20 @@ play_session() {
 		"game_number_guess"
 	)
 	local session_list
-	session_list=$(printf "%s\n" "${game_pool[@]}" | shuf -n "$rounds")
+	session_list=$(printf "%s\n" "${game_pool[@]}" | shuf -r -n "$rounds")
 	local count=1
 	for current_game in $session_list; do
 		clear
-		echo "game $count of $rounds."
-		echo "Current score: $score."
+		echo "ROUND $count / $rounds. SCORE: $score"
 		$current_game
 		(( count++ ))
+		echo -e "\nPress any key for the next round..."
+		read -rsn 1
 	done
 	clear
 	echo "Game over. Total score: $score."
-	echo "Press any key to exit."
+	echo "Press any key to return to menu."
 	read -rsn 1
-	exit 0
 }
 
 show_intro() {
@@ -92,16 +92,20 @@ show_intro() {
 	EOF
 }
 
-show_intro
+wait_for_start() {
+	local key
+	while true; do
+		show_intro
+		read -rsn 1 key
+		case "$key" in
+			"") return 0 ;;
+			$'\e') exit 0 ;;
+		esac
+	done
+}
+
 while true; do
-	IFS= read -rsn 1 key
-	case "$key" in
-		"")
-			play_session
-			;;
-		$'\e')
-			echo "Goodbye."
-			exit 0
-			;;
-	esac
+	if wait_for_start; then
+		play_session
+	fi
 done

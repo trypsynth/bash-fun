@@ -41,10 +41,10 @@ game_number_guess() {
 			echo "You got it! The number was $target."
 			case "$attempts" in
 				1) points_earned=50 ;;
-				2) points_earned=$(randint 38 42) ;;
-				3) points_earned=$(randint 28 32) ;;
-				4) points_earned=$(randint 15 19) ;;
-				5) points_earned=$(randint 8 10) ;;
+				2) points_earned=40 ;;
+				3) points_earned=30 ;;
+				4) points_earned=17 ;;
+				5) points_earned=9 ;;
 			esac
 			break
 		elif (( guess < target )); then

@@ -83,7 +83,7 @@ game_rps() {
 		points_earned=0
 	elif [[ ("$user_choice" == "rock" && "$ai_choice" == "scissors") || ("$user_choice" == "paper" && "$ai_choice" == "rock") || ("$user_choice" == "scissors" && "$ai_choice" == "paper") ]]; then
 		echo "You win! $user_choice beats $ai_choice."
-		points_earned=$(randint 28 32)
+		points_earned=30
 	else
 		echo "You lose! $ai_choice beats $user_choice."
 		points_earned=-10
@@ -120,9 +120,9 @@ play_session() {
 	echo "Would you like to play again? y/n"
 	while true; do
 		read -rsn 1 choice
-		case "$choice" in
-			[yY]) return 0 ;;
-			[nN]) echo "Thanks for playing!"; exit 0 ;;
+		case "${choice,,}" in
+			y) return 0 ;;
+			n) echo "Thanks for playing!"; exit 0 ;;
 		esac
 	done
 }

@@ -65,10 +65,42 @@ game_number_guess() {
 	(( score += points_earned )) || :
 }
 
+game_rps() {
+	local options=("rock" "paper" "scissors")
+	local ai_choice="${options[$(randint 0 2)]}"
+	local user_choice="" points_earned=0 key=""
+	echo "Rock, Paper, Scissors! Press r, p, or s:"
+	while true; do
+		read -rsn 1 key
+		case "${key,,}" in
+			r) user_choice="rock"; break ;;
+			p) user_choice="paper"; break ;;
+			s) user_choice="scissors"; break ;;
+		esac
+	done
+	if [[ "$user_choice" == "$ai_choice" ]]; then
+		echo "It's a tie! We both chose $ai_choice."
+		points_earned=0
+	elif [[ ("$user_choice" == "rock" && "$ai_choice" == "scissors") || ("$user_choice" == "paper" && "$ai_choice" == "rock") || ("$user_choice" == "scissors" && "$ai_choice" == "paper") ]]; then
+		echo "You win! $user_choice beats $ai_choice."
+		points_earned=$(randint 28 32)
+	else
+		echo "You lose! $ai_choice beats $user_choice."
+		points_earned=-10
+	fi
+	if (( points_earned > 0 )); then
+		echo "You gained $points_earned points."
+	else
+		echo "You lost ${points_earned#-} points."
+	fi
+	(( score += points_earned )) || :
+}
+
 play_session() {
 	score=0
 	local game_pool=(
 		"game_number_guess"
+		"game_rps"
 	)
 	local session_list
 	session_list=$(printf "%s\n" "${game_pool[@]}" | shuf -r -n "$rounds")
@@ -79,8 +111,8 @@ play_session() {
 		$current_game
 		echo "Current score: $score."
 		if (( count < rounds )); then
-			echo "Press any key for the next round."
-			read -rsn 1
+			echo "Press Enter for the next round."
+			read -rs
 		fi
 		(( ++count )) || :
 	done

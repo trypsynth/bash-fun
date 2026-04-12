@@ -57,11 +57,6 @@ game_number_guess() {
 		echo "You're out of guesses! The number was $target."
 		points_earned=-10
 	fi
-	if (( points_earned > 0 )); then
-		echo "You gained $points_earned points."
-	else
-		echo "You lost ${points_earned#-} points."
-	fi
 	(( score += points_earned )) || :
 }
 
@@ -88,11 +83,6 @@ game_rps() {
 		echo "You lose! $ai_choice beats $user_choice."
 		points_earned=-10
 	fi
-	if (( points_earned > 0 )); then
-		echo "You gained $points_earned points."
-	else
-		echo "You lost ${points_earned#-} points."
-	fi
 	(( score += points_earned )) || :
 }
 
@@ -108,9 +98,16 @@ play_session() {
 	for current_game in $session_list; do
 		clear
 		echo "Round $count of $rounds."
+		local prev_score=$score
 		$current_game
-		echo "Current score: $score."
+		local diff=$(( score - prev_score ))
+		if (( diff > 0 )); then
+			echo "You gained $diff points."
+		elif (( diff < 0 )); then
+			echo "You lost ${diff#-} points."
+		fi
 		if (( count < rounds )); then
+			echo "Current score: $score."
 			echo "Press Enter for the next round."
 			read -rs
 		fi

@@ -62,11 +62,10 @@ game_higher_lower() {
 
 game_number_guess() {
 	local target
-	target=$(randint 1 10)
+	target=$(randint 1 50)
 	local guess=""
 	local attempts=0 max_attempts=5 points_earned=0
-	game_name="Number Guess"
-	echo "$game_name. Guess my number between 1 and 10."
+	echo "Number Guess. You have 5 tries to guess my number from 1 to 50."
 	while (( attempts < max_attempts )); do
 		read -r guess
 		if [[ ! "$guess" =~ ^[0-9]+$ ]]; then
@@ -76,13 +75,7 @@ game_number_guess() {
 		(( ++attempts ))
 		if (( guess == target )); then
 			echo "You got it! The number was $target."
-			case "$attempts" in
-				1) points_earned=50 ;;
-				2) points_earned=40 ;;
-				3) points_earned=30 ;;
-				4) points_earned=17 ;;
-				5) points_earned=9 ;;
-			esac
+			points_earned=$(( 60 - (attempts * 10) ))
 			break
 		elif (( guess < target )); then
 			echo "Too low!"

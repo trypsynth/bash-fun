@@ -23,6 +23,43 @@ randint() {
 	echo $(( RANDOM % (max - min + 1) + min ))
 }
 
+game_higher_lower() {
+	local current next guess points_earned=0
+	current=$(randint 1 13)
+	next=$(randint 1 13)
+	while (( next == current )); do
+		next=$(randint 1 13)
+	done
+	echo "Higher or Lower! The current number is: $current."
+	echo "Do you think the next number will be higher or lower? (h=higher, l=lower):"
+	while true; do
+		read -rsn 1 guess
+		case "${guess,,}" in
+			h)
+				if (( next > current )); then
+					echo "Correct! The number was $next."
+					points_earned=30
+				else
+					echo "Wrong! The number was $next."
+					points_earned=-15
+				fi
+				break
+				;;
+			l)
+				if (( next < current )); then
+					echo "Correct! The number was $next."
+					points_earned=30
+				else
+					echo "Wrong! The number was $next."
+					points_earned=-15
+				fi
+				break
+				;;
+		esac
+	done
+	(( score += points_earned )) || :
+}
+
 game_number_guess() {
 	local target
 	target=$(randint 1 10)
@@ -89,6 +126,7 @@ game_rps() {
 play_session() {
 	score=0
 	local game_pool=(
+		"game_higher_lower"
 		"game_number_guess"
 		"game_rps"
 	)

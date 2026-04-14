@@ -23,32 +23,6 @@ randint() {
 	echo $(( RANDOM % (max - min + 1) + min ))
 }
 
-game_equality() {
-	local risk_choice
-	echo "Equality. You have an equal chance of doubling your points, gaining 3000 points, or losing EVERYTHING."
-	echo "Would you like to take the risk? (y/n)"
-	read -rsn 1 risk_choice
-	if [[ "${risk_choice,,}" != "y" ]]; then
-		return 0
-	fi
-	local outcome
-	outcome=$(randint 1 3)
-	case "$outcome" in
-		1)
-			echo "LUCKY! Points doubled!"
-			(( score *= 2 )) || :
-			;;
-		2)
-			echo "Nice! Gained 3000 points!"
-			(( score += 3000 )) || :
-			;;
-		3)
-			echo "OUCH. Points go back to 0."
-			score=0
-			;;
-	esac
-}
-
 game_higher_lower() {
 	local current next guess points_earned=0
 	current=$(randint 1 13)
@@ -87,11 +61,11 @@ game_higher_lower() {
 }
 
 game_number_guess() {
-	local target
-	target=$(randint 1 100)
+	local target min=1 max=100
+	target=$(randint "$min" "$max")
 	local guess=""
 	local attempts=0 max_attempts=7 points_earned=0
-	echo "Number Guess. You have $max_attempts tries to guess my number from 1 to 100."
+	echo "Number Guess. You have $max_attempts tries to guess my number from $min to $max."
 	while (( attempts < max_attempts )); do
 		read -r guess
 		if [[ ! "$guess" =~ ^[0-9]+$ ]]; then

@@ -88,10 +88,10 @@ game_higher_lower() {
 
 game_number_guess() {
 	local target
-	target=$(randint 1 50)
+	target=$(randint 1 100)
 	local guess=""
-	local attempts=0 max_attempts=5 points_earned=0
-	echo "Number Guess. You have 5 tries to guess my number from 1 to 50."
+	local attempts=0 max_attempts=7 points_earned=0
+	echo "Number Guess. You have $max_attempts tries to guess my number from 1 to 100."
 	while (( attempts < max_attempts )); do
 		read -r guess
 		if [[ ! "$guess" =~ ^[0-9]+$ ]]; then

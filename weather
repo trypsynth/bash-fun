@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+CITY="${1:-${CITY:-Englewood}}"
+UNIT_TYPE="${UNITS:-F}"
+URL_CITY="${CITY// /+}"
+
+weather_data=$(curl -sf "https://wttr.in/${URL_CITY}?format=j1")
+if [[ "${UNIT_TYPE^^}" == "C" ]]; then
+	temp=$(echo "$weather_data" | jq -r '.current_condition[0].temp_C')
+	feels_like=$(echo "$weather_data" | jq -r '.current_condition[0].FeelsLikeC')
+	unit_label="C"
+else
+	temp=$(echo "$weather_data" | jq -r '.current_condition[0].temp_F')
+	feels_like=$(echo "$weather_data" | jq -r '.current_condition[0].FeelsLikeF')
+	unit_label="F"
+fi
+condition=$(echo "$weather_data" | jq -r '.current_condition[0].weatherDesc[0].value')
+echo "Current weather for ${CITY}:"
+echo "Condition: $condition."
+echo "Temperature: ${temp}${unit_label}; feels like ${feels_like}${unit_label}."

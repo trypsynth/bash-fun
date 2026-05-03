@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+updated=()
+
+update_repos() {
+	for dir in "$1"/*; do
+		[ -d "$dir" ] || continue
+		if [ -d "$dir/.git" ]; then
+			out=$(cd "$dir" && git pull --ff-only 2>&1)
+			if [[ "$out" != *"Already up to date."* ]]; then
+				updated+=("$dir")
+			fi
+		else
+			update_repos "$dir"
+		fi
+	done
+}
+
+update_repos "${1:-.}"
+echo "Updated repositories:"
+for repo in "${updated[@]}"; do
+	echo "  $repo"
+done

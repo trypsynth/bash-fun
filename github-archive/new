@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+dirs=
+for d in */; do
+	[ -d "$d" ] && dirs+="${d%/},"
+done
+dirs=${dirs%,}
+github-archive -cu "$dirs"

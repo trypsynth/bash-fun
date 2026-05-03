@@ -6,14 +6,14 @@ format_time() {
 	local total_seconds=$1
 	local days=$(( total_seconds / 86400 ))
 	local hours=$(( (total_seconds % 86400) / 3600 ))
-	local minutes=$(( (total_seconds  % 3600) / 60 ))
+	local minutes=$(( (total_seconds % 3600) / 60 ))
 	local seconds=$(( total_seconds % 60 ))
 	local units=()
 	add_unit() {
 		local val=$1
 		local label=$2
 		if (( val > 0 )); then
-			[[ $val -gt 1 ]] && label="${label}s"
+			[[ $val -ne 1 ]] && label="${label}s"
 			units+=("$val $label")
 		fi
 	}
@@ -21,11 +21,11 @@ format_time() {
 	add_unit "$hours" "hour"
 	add_unit "$minutes" "minute"
 	add_unit "$seconds" "second"
-	if [[ ${#units[@]} -eq 0 ]]; then
+	local count=${#units[@]}
+	if [[ $count -eq 0 ]]; then
 		echo "0 seconds"
 		return
 	fi
-	local count=${#units[@]}
 	case $count in
 		1)
 			echo "${units[0]}"
@@ -36,23 +36,23 @@ format_time() {
 		*)
 			local result=""
 			for (( i = 0; i < count - 1; i++ )); do
-				result+="${units[i]}"
+				result+="${units[i]}, "
 			done
-			echo "$result"
+			echo "${result}and ${units[count-1]}"
 			;;
 	esac
 }
 
-echo "Stopwatch started. Press space to see the elapsed time, or enter to stop."
+echo "Stopwatch started. Press space to see elapsed time or enter to stop."
 SECONDS=0
 while true; do
 	if IFS= read -rsn 1 -t 0.1 char; then
 		if [[ -z "$char" ]]; then
-			echo -e "\nStopped, final time $(format_time "$SECONDS")."
+			echo -e "\nStopped. Final time: $(format_time "$SECONDS")."
 			exit 0
 		fi
 		if [[ "$char" == " " ]]; then
-			echo "$(format_time "$SECONDS") elapsed."
+			echo "$(format_time "$SECONDS")."
 		fi
 	fi
 done

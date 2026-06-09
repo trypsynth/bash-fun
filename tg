@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 score=0
-rounds=10
+rounds=0
 
 randint() {
 	[[ "$#" == 2 ]] || {
@@ -164,19 +164,40 @@ show_intro() {
 	EOF
 }
 
-wait_for_start() {
-	local key
-	show_intro
+rounds=0
+
+intro() {
+	cat <<-"EOF"
+		Welcome to TermaGames!
+		Press 1 to play 10 rounds,
+		2 to play 15 rounds,
+		3 to play 20 rounds,
+		4 to play 25 rounds,
+		5 to input a custom number of rounds to play,
+		or 0 to exit.
+	EOF
 	while true; do
-		read -rsn 1 key
+		read -srn 1 key
 		case "$key" in
-			"") return 0 ;;
-			$'\e') exit 0 ;;
+		[1-4])
+			rounds=$((5 * key + 5))
+			break
+			;;
+		5)
+			while true; do
+				read -rp "Enter number of rounds: " rounds
+				if [[ "$rounds" =~ ^[0-9]+$ && "$rounds" -gt 0 ]]; then
+					break 2
+				fi
+				echo "Invalid input."
+			done
+			;;
 		esac
 	done
+	echo "Starting game with $rounds round$([[ "$rounds" -eq 1 ]] || echo "s")."
 }
 
-wait_for_start
+intro
 while true; do
 	play_session
 done

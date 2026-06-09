@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+[[ "$EUID" -ne 0 ]] && echo "Please run as root." && exit 1
+xbps-install -S
+xbps-install -u xbps
+xbps-install -u
+if xbps-query -l | grep -q "linux[0-9]"; then
+	current_kernel=$(uname -r | cut -d'.' -f1-2)
+	latest_kernel=$(ls /boot/vmlinuz-* | sort -V | tail -n 1 | grep -oP '(?<=vmlinuz-)\d+\.\d+')
+	if [[ "$current_kernel" != "$latest_kernel" ]]; then
+		echo -e "\n[!] A new kernel is installed. Consider rebooting."
+	fi
+fi

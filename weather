@@ -1,29 +1,36 @@
 #!/usr/bin/env bash
-
 set -Eeuo pipefail
 
+if [[ -z "${WEATHER_API_KEY:-}" ]]; then
+	echo "Error: WEATHER_API_KEY environment variable not set." >&2
+	exit 1
+fi
 CITY="${*:-${CITY:-}}"
 if [[ -z "$CITY" ]]; then
-	echo "Error: No city specified."
-	echo "Usage: $0 <city name> OR set the CITY environment variable."
+	echo "Error: No city specified." >&2
+	echo "Usage: $0 <city name> OR set the CITY environment variable." >&2
 	exit 1
 fi
 UNIT_TYPE="${UNITS:-F}"
-URL_CITY="${CITY// /+}"
-weather_data=$(curl -sf "https://wttr.in/${URL_CITY}?format=j1")
-area=$(echo "$weather_data" | jq -r '.nearest_area[0].areaName[0].value')
-region=$(echo "$weather_data" | jq -r '.nearest_area[0].region[0].value')
-country=$(echo "$weather_data" | jq -r '.nearest_area[0].country[0].value')
+response=$(curl -s "http://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${CITY}&aqi=no")
+if echo "$response" | jq -e '.error' >/dev/null; then
+	error_msg=$(echo "$response" | jq -r '.error.message')
+	echo "API Error: $error_msg" >&2
+	exit 1
+fi
+area=$(echo "$response" | jq -r '.location.name')
+region=$(echo "$response" | jq -r '.location.region')
+country=$(echo "$response" | jq -r '.location.country')
+condition=$(echo "$response" | jq -r '.current.condition.text')
 if [[ "${UNIT_TYPE^^}" == "C" ]]; then
-	temp=$(echo "$weather_data" | jq -r '.current_condition[0].temp_C')
-	feels_like=$(echo "$weather_data" | jq -r '.current_condition[0].FeelsLikeC')
+	temp=$(echo "$response" | jq -r '.current.temp_c')
+	feels_like=$(echo "$response" | jq -r '.current.feelslike_c')
 	unit_label="C"
 else
-	temp=$(echo "$weather_data" | jq -r '.current_condition[0].temp_F')
-	feels_like=$(echo "$weather_data" | jq -r '.current_condition[0].FeelsLikeF')
+	temp=$(echo "$response" | jq -r '.current.temp_f')
+	feels_like=$(echo "$response" | jq -r '.current.feelslike_f')
 	unit_label="F"
 fi
-condition=$(echo "$weather_data" | jq -r '.current_condition[0].weatherDesc[0].value')
 echo "Current weather for $area, $region, $country:"
 echo "Condition: $condition"
 echo "Temperature: ${temp}${unit_label} (Feels like: ${feels_like}${unit_label})"

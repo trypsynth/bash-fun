@@ -6,12 +6,25 @@ if ! command -v shellcheck &> /dev/null; then
 	exit 1
 fi
 exit_code=0
-while IFS= read -r -d '' file; do
-	if ! output=$(shellcheck "$file" 2>&1); then
-		echo "Errors found in $file" >&2
-		echo "$output" >&2
-		echo "" >&2
-		exit_code=1
+shopt -s globstar nullglob
+for file in **/*; do
+	[[ -d "$file" ]] && continue
+	[[ "$file" == ./* ]] && continue
+	is_shell_script=false
+	if [[ "$file" =~ \.(sh|bash)$ ]]; then
+		is_shell_script=true
+	elif [[ -r "$file" && -f "$file" ]]; then
+		first_line=$(head -n 1 "$file" 2>/dev/null || true)
+		if [[ "$first_line" =~ ^#\!.*(bash|sh|zsh|ksh) ]]; then
+			is_shell_script=true
+		fi
 	fi
-done < <(find . -type f -not -path '*/.*' ! -name "*.*" -print0)
+	if [ "$is_shell_script" = true ]; then
+		if ! output=$(shellcheck "$file" 2>&1); then
+			echo "Errors found in $file" >&2
+			echo "$output" >&2
+			exit_code=1
+		fi
+	fi
+done
 exit "$exit_code"

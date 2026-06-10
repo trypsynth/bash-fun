@@ -13,7 +13,6 @@ if [[ -e "$projname" ]]; then
 fi
 cat <<EOF > "$projname"
 #!/usr/bin/env bash
-
 set -Eeuo pipefail
 EOF
 chmod +x "$projname"

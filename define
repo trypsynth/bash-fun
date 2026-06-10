@@ -5,4 +5,14 @@ if [[ -z "$1" ]]; then
 	echo "Usage: define <word>"
 	exit 1
 fi
-curl -s "https://api.dictionaryapi.dev/api/v2/entries/en/$1" | jq -r '.[0].meanings[0].definitions[0].definition'
+response=$(curl -s "https://api.dictionaryapi.dev/api/v2/entries/en/$1")
+if echo "$response" | jq -e '.title? == "No Definitions Found"' > /dev/null; then
+	echo "Error: Word '$1' not found."
+	exit 1
+fi
+definition=$(echo "$response" | jq -r '.[0].meanings[0].definitions[0].definition? // empty')
+if [[ -z "$definition" ]]; then
+	echo "Error: Could not parse definition for '$1'."
+	exit 1
+fi
+echo "$definition"

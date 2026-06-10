@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+if [[ -z "$1" ]]; then
+	echo "Usage: define <word>"
+	exit 1
+fi
+curl -s "https://api.dictionaryapi.dev/api/v2/entries/en/$1" | jq -r '.[0].meanings[0].definitions[0].definition'

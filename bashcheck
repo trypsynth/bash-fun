@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v shellcheck &> /dev/null; then
+	echo "Error: shellcheck is not installed." >&2
+	exit 1
+fi
+exit_code=0
+while IFS= read -r -d '' file; do
+	if ! output=$(shellcheck "$file" 2>&1); then
+		echo "Errors found in $file" >&2
+		echo "$output" >&2
+		echo "" >&2
+		exit_code=1
+	fi
+done < <(find . -type f -not -path '*/.*' ! -name "*.*" -print0)
+exit "$exit_code"

@@ -1,0 +1,24 @@
+#!/bin/bash
+set -u
+
+if [ -z "${1:-}" ]; then
+	echo "Usage: ud <word or phrase>"
+	exit 1
+fi
+word="${*// /%20/}"
+response=$(curl -s "https://api.urbandictionary.com/v0/define?term=${word}")
+list_length=$(echo "$response" | jq '.list | length')
+if [ "$list_length" -eq 0 ]; then
+	echo "No definitions found for '$*'."
+	exit 0
+fi
+i=1
+echo "$response" | jq -c '.list[]' | while read -r item; do
+	definition=$(echo "$item" | jq -r '.definition' | sed 's/\[//g; s/\]//g')
+	example=$(echo "$item" | jq -r '.example' | sed 's/\[//g; s/\]//g')
+	echo "${i}. ${definition}"
+	if [ -n "$example" ]; then
+		echo "Example: $example"
+	fi
+	((i++))
+done

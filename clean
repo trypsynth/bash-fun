@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
 
 partitions=("/" "/home")
-[[ "$EUID" -ne 0 ]] && echo "Run as root." && exit 1
+[[ "$EUID" -ne 0 ]] && echo "Run as root." >&2 && exit 1
 
 get_used_space() {
 	df --output=used "${partitions[@]}" | tail -n +2 | awk '{s+=$1} END {print s}'

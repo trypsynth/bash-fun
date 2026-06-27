@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -u
 
-[[ "$EUID" -ne 0 ]] && echo "Please run as root." && exit 1
+[[ "$EUID" -ne 0 ]] && echo "Run as root." >&2 && exit 1
 xbps-install -S
 xbps-install -u xbps
 xbps-install -u

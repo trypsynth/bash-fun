@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -u
 
-partitions=("/" "/home")
 [[ "$EUID" -ne 0 ]] && echo "Run as root." >&2 && exit 1
 
 get_used_space() {
 	df --output=used "${partitions[@]}" | tail -n +2 | awk '{s+=$1} END {print s}'
 }
 
+partitions=("/" "/home")
 start_used=$(get_used_space)
-echo "Cleaning XBPS orphans, cache, and old kernels..."
 xbps-remove -yoO
 [[ -x $(type -P vkpurge) ]] && vkpurge rm all
 end_used=$(get_used_space)
 diff=$(( start_used - end_used ))
-reclaimed=$(( diff / 1024 ))
-if [[ $reclaimed -le 0 ]]; then
+if [[ "$diff" -le 0 ]]; then
 	echo "Nothing significant to clean."
+elif [[ "$diff" -lt 1024 ]]; then
+	echo "Success! Reclaimed ${diff}KB across ${partitions[*]}."
 else
+	reclaimed=$(( diff / 1024 ))
 	echo "Success! Reclaimed approximately ${reclaimed}MB across ${partitions[*]}."
 fi

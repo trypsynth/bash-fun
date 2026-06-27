@@ -15,10 +15,6 @@ fi
 i=1
 echo "$response" | jq -c '.list[]' | while read -r item; do
 	definition=$(echo "$item" | jq -r '.definition' | sed 's/\[//g; s/\]//g')
-	example=$(echo "$item" | jq -r '.example' | sed 's/\[//g; s/\]//g')
 	echo "${i}. ${definition}"
-	if [ -n "$example" ]; then
-		echo "Example: $example"
-	fi
 	((i++))
 done

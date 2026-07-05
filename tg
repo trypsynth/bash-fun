@@ -5,20 +5,7 @@ score=0
 rounds=0
 
 randint() {
-	[[ "$#" == 2 ]] || {
-		echo "Usage: randint <min> <max>" >&2
-		return 1
-	}
 	local min="$1" max="$2"
-	local re='^-?[0-9]+$'
-	if ! [[ "$min" =~ $re ]] || ! [[ "$max" =~ $re ]]; then
-		echo "Error: Arguments must be integers." >&2
-		return 1
-	fi
-	if (( min > max )); then
-		echo "Error: Min cannot be greater than Max." >&2
-		return 1
-	fi
 	echo $(( RANDOM % (max - min + 1) + min ))
 }
 
@@ -118,7 +105,6 @@ game_rps() {
 play_session() {
 	score=0
 	local game_pool=(
-		"game_equality"
 		"game_higher_lower"
 		"game_number_guess"
 		"game_rps"

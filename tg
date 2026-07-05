@@ -189,7 +189,7 @@ play_session() {
 	local session_list=()
 	local max_idx=$(( ${#game_pool[@]} - 1 ))
 	for ((i=0; i<rounds; i++)); do
-		session_list+=("${game_pool[$(randint 0 max_idx)]}")
+		session_list+=("${game_pool[$(randint 0 $max_idx)]}")
 	done
 	for (( count=1; count <= rounds; count++ )); do
 		clear

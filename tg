@@ -96,12 +96,12 @@ play_session() {
 		"game_number_guess"
 		"game_rps"
 	)
-	local session_list
-	session_list=$(printf "%s\n" "${game_pool[@]}" | shuf -r -n "$rounds")
-	local count=1
-	for current_game in $session_list; do
+	local session_list=()
+	mapfile -t session_list < <(printf "%s\n" "${game_pool[@]}" | shuf -r -n "$rounds")
+	for (( count=1; count <= rounds; count++ )); do
 		clear
 		echo "Round $count of $rounds."
+		local current_game="${session_list[count-1]}"
 		local prev_score=$score
 		$current_game
 		local diff=$(( score - prev_score ))

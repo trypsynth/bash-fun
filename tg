@@ -49,7 +49,7 @@ game_number_guess() {
 		(( ++attempts ))
 		if (( guess == target )); then
 			echo "You got it! The number was $target."
-			points_earned=$(( 60 - (attempts * 10) ))
+			points_earned=$(( 60 - (attempts * 7) ))
 			break
 		elif (( guess < target )); then
 			echo "Too low!"

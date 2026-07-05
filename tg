@@ -33,7 +33,6 @@ game_equality() {
 		echo "Points doubled!"
 		(( score *= 2 ))
 	elif (( outcome == 2 )); then
-		echo "3000 points!"
 		(( score += 3000 ))
 	else
 		echo "Ouch! Points go back to 0."

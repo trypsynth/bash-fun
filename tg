@@ -155,16 +155,6 @@ play_session() {
 	done
 }
 
-show_intro() {
-	clear
-	cat <<-EOF
-	Welcome to TermaGames, a small collection of Bash minigames.
-	To start playing, press enter. To exit, press escape.
-	EOF
-}
-
-rounds=0
-
 intro() {
 	cat <<-"EOF"
 		Welcome to TermaGames!

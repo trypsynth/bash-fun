@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -u
 
 projname="$1"
 if [[ -z "$projname" ]]; then
@@ -14,6 +15,7 @@ elif [[ -f "$projname" ]]; then
 fi
 cat <<EOF > "$projname"
 #!/usr/bin/env bash
+set -u
 EOF
 chmod +x "$projname"
 echo "Successfully initialized $projname."

@@ -116,7 +116,6 @@ play_session() {
 			echo "Press Enter for the next round."
 			read -rs
 		fi
-		(( ++count ))
 	done
 	echo "Game over. Final score: $score."
 	echo "Would you like to play again? y/n"

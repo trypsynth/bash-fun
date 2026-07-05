@@ -21,28 +21,15 @@ game_higher_lower() {
 	while true; do
 		read -rsn 1 guess
 		case "${guess,,}" in
-			h)
-				if (( next > current )); then
-					echo "Correct! The number was $next."
-					points_earned=30
-				else
-					echo "Wrong! The number was $next."
-					points_earned=-15
-				fi
-				break
-				;;
-			l)
-				if (( next < current )); then
-					echo "Correct! The number was $next."
-					points_earned=30
-				else
-					echo "Wrong! The number was $next."
-					points_earned=-15
-				fi
-				break
-				;;
+			h|l) break ;;
 		esac
 	done
+	if { [[ "${guess,,}" == "h" ]] && (( next > current )); } || { [[ "${guess,,}" == "l" ]] && (( next < current )); }; then
+		echo "Correct! The number was $next."
+		points_earned=30
+	else
+		echo "Wrong! The number was $next."
+	fi
 	(( score += points_earned ))
 }
 

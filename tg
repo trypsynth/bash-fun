@@ -20,11 +20,12 @@ game_higher_lower() {
 	echo "Do you think the next number will be higher or lower? (h=higher, l=lower):"
 	while true; do
 		read -rsn 1 guess
-		case "${guess,,}" in
+		guess="${guess,,}"
+		case "$guess" in
 			h|l) break ;;
 		esac
 	done
-	if { [[ "${guess,,}" == "h" ]] && (( next > current )); } || { [[ "${guess,,}" == "l" ]] && (( next < current )); }; then
+	if { [[ "$guess" == "h" ]] && (( next > current )); } || { [[ "$guess" == "l" ]] && (( next < current )); }; then
 		echo "Correct! The number was $next."
 		points_earned=30
 	else

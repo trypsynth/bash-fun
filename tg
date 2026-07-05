@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-set -Eeuo pipefail
+set -u
 
 score=0
 rounds=0
@@ -57,7 +56,7 @@ game_higher_lower() {
 				;;
 		esac
 	done
-	(( score += points_earned )) || :
+	(( score += points_earned ))
 }
 
 game_number_guess() {
@@ -87,7 +86,7 @@ game_number_guess() {
 		echo "You're out of guesses! The number was $target."
 		points_earned=-10
 	fi
-	(( score += points_earned )) || :
+	(( score += points_earned ))
 }
 
 game_rps() {
@@ -113,7 +112,7 @@ game_rps() {
 		echo "You lose! $ai_choice beats $user_choice."
 		points_earned=-10
 	fi
-	(( score += points_earned )) || :
+	(( score += points_earned ))
 }
 
 play_session() {
@@ -143,7 +142,7 @@ play_session() {
 			echo "Press Enter for the next round."
 			read -rs
 		fi
-		(( ++count )) || :
+		(( ++count ))
 	done
 	echo "Game over. Final score: $score."
 	echo "Would you like to play again? y/n"

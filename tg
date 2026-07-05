@@ -90,6 +90,40 @@ game_rps() {
 	(( score += points_earned ))
 }
 
+intro() {
+	cat <<-"EOF"
+		Welcome to TermaGames!
+		Press 1 to play 10 rounds,
+		2 to play 15 rounds,
+		3 to play 20 rounds,
+		4 to play 25 rounds,
+		5 to input a custom number of rounds to play,
+		or 0 to exit.
+	EOF
+	while true; do
+		read -srn 1 key
+		case "$key" in
+		[1-4])
+			rounds=$((5 * key + 5))
+			break
+			;;
+		5)
+			while true; do
+				read -rp "Enter number of rounds: " rounds
+				if [[ "$rounds" =~ ^[0-9]+$ && "$rounds" -gt 0 ]]; then
+					break 2
+				fi
+				echo "Invalid input."
+			done
+			;;
+		0)
+			exit 0
+			;;
+		esac
+	done
+	echo "Starting game with $rounds round$([[ "$rounds" -eq 1 ]] || echo "s")."
+}
+
 play_session() {
 	score=0
 	local game_pool=(
@@ -126,40 +160,6 @@ play_session() {
 			n) echo "Thanks for playing!"; exit 0 ;;
 		esac
 	done
-}
-
-intro() {
-	cat <<-"EOF"
-		Welcome to TermaGames!
-		Press 1 to play 10 rounds,
-		2 to play 15 rounds,
-		3 to play 20 rounds,
-		4 to play 25 rounds,
-		5 to input a custom number of rounds to play,
-		or 0 to exit.
-	EOF
-	while true; do
-		read -srn 1 key
-		case "$key" in
-		[1-4])
-			rounds=$((5 * key + 5))
-			break
-			;;
-		5)
-			while true; do
-				read -rp "Enter number of rounds: " rounds
-				if [[ "$rounds" =~ ^[0-9]+$ && "$rounds" -gt 0 ]]; then
-					break 2
-				fi
-				echo "Invalid input."
-			done
-			;;
-		0)
-			exit 0
-			;;
-		esac
-	done
-	echo "Starting game with $rounds round$([[ "$rounds" -eq 1 ]] || echo "s")."
 }
 
 intro

@@ -3,6 +3,19 @@
 score=0
 rounds=0
 
+prompt_yes_no() {
+	local choice="" prompt="$1"
+	echo -n "$prompt (y/n) "
+	while true; do
+		read -rsn 1 choice
+		choice="${choice,,}"
+		case "$choice" in
+			y) echo "y"; return 0 ;;
+			n) echo "n"; return 1 ;;
+		esac
+	done
+}
+
 randint() {
 	local min="$1" max="$2"
 	echo $(( RANDOM % (max - min + 1) + min ))
@@ -11,15 +24,7 @@ randint() {
 game_equality() {
 	local risk="" outcome=0
 	echo "Equality! You have an equal chance of doubling your points, gaining 3000 points, or losing all of your points."
-	echo "Would you like to take the risk? (y/n)"
-	while true; do
-		read -rsn 1 risk
-		risk="${risk,,}"
-		case "$risk" in
-			y|n) break;;
-		esac
-	done
-	if [[ "$risk" == "n" ]]; then
+	if ! prompt_yes_no "Would you like to take the risk?"; then
 		echo "Smart move. Skipping the risk."
 		return 0
 	fi
@@ -182,14 +187,12 @@ play_session() {
 		fi
 	done
 	echo "Game over. Final score: $score."
-	echo "Would you like to play again? y/n"
-	while true; do
-		read -rsn 1 choice
-		case "${choice,,}" in
-			y) return 0 ;;
-			n) echo "Thanks for playing!"; exit 0 ;;
-		esac
-	done
+	if prompt_yes_no "Would you like to play again?"; then
+		return 0
+	else
+		echo "Thanks for playing!"
+		exit 0
+	fi
 }
 
 intro

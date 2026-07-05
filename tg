@@ -191,6 +191,9 @@ intro() {
 				echo "Invalid input."
 			done
 			;;
+		0)
+			exit 0
+			;;
 		esac
 	done
 	echo "Starting game with $rounds round$([[ "$rounds" -eq 1 ]] || echo "s")."

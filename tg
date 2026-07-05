@@ -22,7 +22,7 @@ randint() {
 }
 
 game_equality() {
-	local risk="" outcome=0
+	local outcome=0
 	echo "Equality! You have an equal chance of doubling your points, gaining 3000 points, or losing all of your points."
 	if ! prompt_yes_no "Would you like to take the risk?"; then
 		echo "Smart move. Skipping the risk."

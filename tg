@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -u
 
 score=0
 rounds=0
@@ -132,7 +131,9 @@ play_session() {
 		"game_rps"
 	)
 	local session_list=()
-	mapfile -t session_list < <(printf "%s\n" "${game_pool[@]}" | shuf -r -n "$rounds")
+	for ((i=0; i<rounds; i++)); do
+		session_list+=("${game_pool[$(randint 0 2)]}")
+	done
 	for (( count=1; count <= rounds; count++ )); do
 		clear
 		echo "Round $count of $rounds."

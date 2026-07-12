@@ -1,7 +1,7 @@
 #!/bin/bash
-set -euo pipefail
+set -u
 
-if [[ -z "$1" ]]; then
+if [[ -z "${1:-}" ]]; then
 	echo "Usage: define <word>"
 	exit 1
 fi
@@ -10,9 +10,4 @@ if echo "$response" | jq -e '.title? == "No Definitions Found"' > /dev/null; the
 	echo "Error: Word '$1' not found."
 	exit 1
 fi
-definition=$(echo "$response" | jq -r '.[0].meanings[0].definitions[0].definition? // empty')
-if [[ -z "$definition" ]]; then
-	echo "Error: Could not parse definition for '$1'."
-	exit 1
-fi
-echo "$definition"
+echo "$response" | jq -r '.[] | .meanings[] | "\n[\(.partOfSpeech)]", (.definitions[] | "- \(.definition)")'

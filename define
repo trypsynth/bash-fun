@@ -10,4 +10,4 @@ if echo "$response" | jq -e '.title? == "No Definitions Found"' > /dev/null; the
 	echo "Error: Word '$1' not found."
 	exit 1
 fi
-echo "$response" | jq -r '.[] | .meanings[] | "\n[\(.partOfSpeech)]", (.definitions[] | "- \(.definition)")'
+echo "$response" | jq -r '.[] | .meanings[] | "\n[\(.partOfSpeech)]", (.definitions[] | "- \(.definition)")' | tr -s '\n'

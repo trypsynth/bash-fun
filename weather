@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u
+set -uo pipefail
 
 if [[ -z "${WEATHER_API_KEY:-}" ]]; then
 	echo "Error: WEATHER_API_KEY environment variable not set." >&2
@@ -12,8 +12,11 @@ if [[ -z "$CITY" ]]; then
 	exit 1
 fi
 UNIT_TYPE="${UNITS:-F}"
-response=$(curl -s "http://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${CITY}&aqi=no")
-if echo "$response" | jq -e '.error' >/dev/null; then
+response=$(curl -fsSL --get --data-urlencode "q=${CITY}" "http://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&aqi=no") || {
+	echo "Error: Failed to reach weather service." >&2
+	exit 1
+}
+if echo "$response" | jq -e '.error' >/dev/null 2>&1; then
 	error_msg=$(echo "$response" | jq -r '.error.message')
 	echo "Error: $error_msg" >&2
 	exit 1

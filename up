@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u
+set -uo pipefail
 
 [[ "$EUID" -ne 0 ]] && echo "Run as root." >&2 && exit 1
 xbps-install -S
@@ -7,9 +7,13 @@ xbps-install -u xbps
 xbps-install -u
 if xbps-query -l | grep -q "linux[0-9]"; then
 	current_kernel=$(uname -r | cut -d'.' -f1-2)
+	shopt -s nullglob
 	kernels=(/boot/vmlinuz-*)
-	latest_kernel=$(printf '%s\n' "${kernels[@]}" | sort -V | tail -n 1 | grep -oP '(?<=vmlinuz-)\d+\.\d+')
-	if [[ "$current_kernel" != "$latest_kernel" ]]; then
-		echo -e "\n[!] A new kernel is installed. Consider rebooting."
+	shopt -u nullglob
+	if (( ${#kernels[@]} > 0 )); then
+		latest_kernel=$(printf '%s\n' "${kernels[@]}" | sort -V | tail -n 1 | grep -oP '(?<=vmlinuz-)\d+\.\d+')
+		if [[ "$current_kernel" != "$latest_kernel" ]]; then
+			echo -e "\n[!] A new kernel is installed. Consider rebooting."
+		fi
 	fi
 fi

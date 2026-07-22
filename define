@@ -1,13 +1,16 @@
 #!/bin/bash
-set -u
+set -uo pipefail
 
 if [[ -z "${1:-}" ]]; then
-	echo "Usage: define <word>"
+	echo "Usage: define <word>" >&2
 	exit 1
 fi
-response=$(curl -s "https://api.dictionaryapi.dev/api/v2/entries/en/$1")
-if echo "$response" | jq -e '.title? == "No Definitions Found"' > /dev/null; then
-	echo "Error: Word '$1' not found."
+response=$(curl -sS "https://api.dictionaryapi.dev/api/v2/entries/en/$1") || {
+	echo "Error: Could not fetch definition or word '$1' not found." >&2
+	exit 1
+}
+if echo "$response" | jq -e '.title? == "No Definitions Found"' > /dev/null 2>&1; then
+	echo "Error: Word '$1' not found." >&2
 	exit 1
 fi
 echo "$response" | jq -r '.[] | .meanings[] | "\n[\(.partOfSpeech)]", (.definitions[] | "- \(.definition)")' | tr -s '\n'

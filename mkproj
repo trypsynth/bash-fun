@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
+set -uo pipefail
 
-projname="$1"
+projname="${1:-}"
 if [[ -z "$projname" ]]; then
-	echo "usage: $(basename "$0") <project-name>"
+	echo "usage: $(basename "$0") <project-name>" >&2
 	exit 1
 fi
 if [[ -d "$projname" ]]; then
-	echo "Error: $projname is a directory."
+	echo "Error: $projname is a directory." >&2
 	exit 1
 elif [[ -f "$projname" ]]; then
 	read -rn 1 -p "$projname already exists. Overwrite? (y/n): " choice
 	echo ""
 	[[ "$choice" =~ ^[yY]([eE][sS])?$ ]] || exit 0
 fi
-cat <<EOF > "$projname"
+cat <<'EOF' > "$projname"
 #!/usr/bin/env bash
+set -uo pipefail
+
 EOF
 chmod +x "$projname"
 echo "Successfully initialized $projname."

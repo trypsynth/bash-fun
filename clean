@@ -7,7 +7,24 @@ get_used_space() {
 	df --output=used "${partitions[@]}" | tail -n +2 | awk '{s+=$1} END {print s}'
 }
 
+grammarize_list() {
+	local arr=("$@")
+	local len="${#arr[@]}"
+	case "$len" in
+		0) echo "" ;;
+		1) echo "${arr[0]}" ;;
+		2) echo "${arr[0]} and ${arr[1]}" ;;
+		*)
+			local last_idx=$(( len - 1 ))
+			local front=("${arr[@]:0:$last_idx}")
+			local IFS=", "
+			echo "${front[*]}, and ${arr[$last_idx]}"
+			;;
+	esac
+}
+
 partitions=("/" "/home")
+formatted_partitions=$(grammarize_list "${partitions[@]}")
 start_used=$(get_used_space)
 xbps-remove -yoO
 [[ -x $(type -P vkpurge) ]] && vkpurge rm all
@@ -16,8 +33,8 @@ diff=$(( start_used - end_used ))
 if [[ "$diff" -le 0 ]]; then
 	echo "Nothing significant to clean."
 elif [[ "$diff" -lt 1024 ]]; then
-	echo "Success! Reclaimed ${diff}KB across ${partitions[*]}."
+	echo "Success! Reclaimed ${diff}KB across ${formatted_partitions[*]}."
 else
 	reclaimed=$(( diff / 1024 ))
-	echo "Success! Reclaimed approximately ${reclaimed}MB across ${partitions[*]}."
+	echo "Success! Reclaimed approximately ${reclaimed}MB across ${formatted_partitions[*]}."
 fi
